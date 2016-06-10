@@ -20,20 +20,27 @@ appendChild = (elem, childs)->
         elem.innerText += childs
     if childs instanceof HTMLElement
         elem.appendChild(childs)
+    if childs and childs.render
+        appendChild(elem,childs.render())
     else if Array.isArray childs
         for c in childs
             appendChild(elem, c)
 
-mktag = (tagname)-> (arg1, arg2)->
+argsparser = (arg1, arg2)->
     [attrs, contents] =
         if not arg1? and not arg2?
-            [null, null]
+            [{}, []]
         else if Array.isArray arg1
-            [null, arg1]
-        else if typeof arg1 is "string"
-            [null, arg1]
+            [{}, arg1]
+        else if typeof arg1 is "string" or arg1 instanceof HTMLElement or (arg1 and arg1.render)
+            [{}, [arg1]]
+        else if typeof arg2 is "string" or arg2 instanceof HTMLElement or (arg2 and arg2.render)
+            [arg1, [arg2]]
         else
             [arg1, arg2]
+
+mktag = (tagname)-> (arg1, arg2)->
+    [attrs, contents] = argsparser(arg1,arg2)
     t = document.createElement(tagname)
     if attrs
         for at, v of attrs
@@ -52,7 +59,8 @@ tags.br = document.createElement("br")
 tags.hr = document.createElement("hr")
 module.exports = {
     tags
-    importTags : ->
+    argsparser
+    import: ->
         for name, tag of tags
             window[name] = tag
 }

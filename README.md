@@ -6,15 +6,15 @@ examples:
 ```javascript
 require("htags").importTags()
 class MyUIComp
-	render: ->
-    	div {class:"classname"}, "hello world"
+    render: ->
+        div {class:"classname"}, "hello world"
 ```
 ```javascript
 H = require("htags").tags
 class MyUIComp
-	render: ->
-    	H.div [
-        	H.p "hello"
+    render: ->
+        H.div [
+            H.p "hello"
             H.br
             H.div "world"
         ]
