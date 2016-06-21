@@ -4,7 +4,7 @@ htags is a simple library for working with html intended to use with coffeescrip
 
 examples:
 ```javascript
-require("htags").importTags()
+require("htags").import()
 class MyUIComp
     render: ->
         div {class:"classname"}, "hello world"
