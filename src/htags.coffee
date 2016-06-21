@@ -14,10 +14,11 @@ tagnames = ['html', 'head', 'title', 'base', 'link', 'meta', 'style', 'script',
   'keygen', 'output', 'progress', 'meter', 'details', 'summary', 'details',
   'menuitem', 'menu']
 
-
+    
 appendChild = (elem, childs)->
-    if typeof childs is "string"
-        elem.innerText += childs
+    if typeof childs is "string" or typeof childs is "number"
+        #elem.innerText += childs
+        elem.textContent += childs
     if childs instanceof HTMLElement
         elem.appendChild(childs)
     if childs and childs.render
@@ -32,9 +33,9 @@ argsparser = (arg1, arg2)->
             [{}, []]
         else if Array.isArray arg1
             [{}, arg1]
-        else if typeof arg1 is "string" or arg1 instanceof HTMLElement or (arg1 and arg1.render)
+        else if typeof arg1 is "string" or arg1 instanceof HTMLElement or typeof arg1 is "number" or (arg1 and arg1.render)
             [{}, [arg1]]
-        else if typeof arg2 is "string" or arg2 instanceof HTMLElement or (arg2 and arg2.render)
+        else if typeof arg2 is "string" or arg2 instanceof HTMLElement or typeof arg2 is "number" or (arg2 and arg2.render)
             [arg1, [arg2]]
         else
             [arg1, arg2]
@@ -46,6 +47,8 @@ mktag = (tagname)-> (arg1, arg2)->
         for at, v of attrs
             if at is "class"
                 t.className = v
+            if at.substring(2) is "on"
+                t.addEventListener at, v
             else if at.startsWith("data")
                 t.dataset[at.substring(5)] = v
             else
@@ -55,14 +58,19 @@ mktag = (tagname)-> (arg1, arg2)->
 tags = {}
 for name in tagnames
     tags[name] = mktag(name)
-tags.br = document.createElement("br")
-tags.hr = document.createElement("hr")
+#tags.br = document.createElement("br")
+#tags.hr = document.createElement("hr")
+Object.defineProperty tags, "br", get: -> document.createElement("br")
+Object.defineProperty tags, "hr", get: -> document.createElement("hr")
+
 module.exports = {
     tags
     argsparser
     import: ->
         for name, tag of tags
             window[name] = tag
+        Object.defineProperty window, "br", get: -> document.createElement("br")
+        Object.defineProperty window, "hr", get: -> document.createElement("hr")
 }
 
 
